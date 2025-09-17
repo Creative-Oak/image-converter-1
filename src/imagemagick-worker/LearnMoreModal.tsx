@@ -59,24 +59,24 @@ export const LearnMoreModal: React.FC<{
                 as="h3"
                 className="text-2xl mb-4 font-semibold leading-6 text-gray-900"
               >
-                What are we fetching?
+                Hvad henter vi?
               </Dialog.Title>
               <div className="children:text-gray-500 space-y-3">
                 <p>
-                  To actually convert files locally, we use this awesome piece
-                  of software called ImageMagick.
+                  For faktisk at konvertere filer lokalt, bruger vi dette fantastiske
+                  software kaldet ImageMagick.
                 </p>
-                <p>ImageMagick is pretty big, and stands at a whopping 20MB.</p>
+                <p>ImageMagick er ret stort og fylder hele 20MB.</p>
                 <p>
-                  Please note that to convert files, fetching ImageMagick is
-                  required.
+                  Bemærk venligst, at for at konvertere filer er det påkrævet
+                  at hente ImageMagick.
                 </p>
 
                 <Disclosure as={React.Fragment}>
                   {({ open }) => (
                     <div className="border-2 rounded px-3 py-2 transition-[height] ease-in-out">
                       <Disclosure.Button className="flex items-center w-full font-semibold">
-                        <p>Technical Details</p>
+                        <p>Tekniske detaljer</p>
                         <div className="flex-grow" />
                         {open ? (
                           <IoChevronUpOutline />
@@ -87,32 +87,32 @@ export const LearnMoreModal: React.FC<{
 
                       <Disclosure.Panel className="mt-3 space-y-3">
                         <p>
-                          ImageMagick for the web is powered by{" "}
+                          ImageMagick til web er drevet af{" "}
                           <A href="https://webassembly.org/">WebAssembly</A>,{" "}
-                          which means what is downloaded is a WebAssembly build.
-                          WebAssembly is sandboxed and runs in its own virtual
-                          machine.
+                          hvilket betyder, at det der downloades er en WebAssembly build.
+                          WebAssembly er sandboxed og kører i sin egen virtuelle
+                          maskine.
                         </p>
                         <p>
-                          The original source of the ImageMagick WASM library
-                          can be viewed here and the builds uses can be viewed{" "}
+                          Den originale kilde til ImageMagick WASM biblioteket
+                          kan ses her og de builds der bruges kan ses{" "}
                           <A href="https://github.com/dlemstra/magick-wasm">
-                            here
+                            her
                           </A>
                           .
                         </p>
                         <p>
-                          We also use{" "}
+                          Vi bruger også{" "}
                           <A href="https://github.com/strukturag/libheif">
                             libheif
                           </A>, 
-                          which is used for converting HEIC images. Libheif has an Emscripten build available{" "}
+                          som bruges til at konvertere HEIC billeder. Libheif har en Emscripten build tilgængelig{" "}
                           <A href="https://github.com/catdad-experiments/libheif-js">
-                            here
+                            her
                           </A>
-                          . The specific libheif build used can be viewed{" "}
+                          . Den specifikke libheif build der bruges kan ses{" "}
                           <A href="https://gitlab.com/Armster15/heic-decode">
-                            here
+                            her
                           </A>
                           .
                         </p>

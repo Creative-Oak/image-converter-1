@@ -34,8 +34,8 @@ function useBroadcast<T = any>(channel: string) {
 
 export const GettingStarted: React.FC = () => {
   return (
-    <div className="toast p-3">
-      <p className="mb-2">Getting started...</p>
+    <div className="toast p-4">
+      <p className="mb-3 text-lg font-light">Kommer i gang...</p>
       <ProgressBar />
     </div>
   )
@@ -53,9 +53,15 @@ export const Consent: React.FC = () => {
       if (("serviceWorker" in navigator)) {
         const result = await isImageMagickInCache();
         if(result) setConsent(true);
-        else setConsent("not-decided");
+        else {
+          // Automatically start loading ImageMagick without user consent
+          setConsent(true);
+        }
       }
-      else setConsent("not-decided")
+      else {
+        // Automatically start loading ImageMagick without user consent
+        setConsent(true);
+      }
     })()
   }, [])
 
@@ -63,35 +69,35 @@ export const Consent: React.FC = () => {
   else if (consent === "loading") return <GettingStarted />
 
   else if (consent === false) return (
-    <div className="toast p-3 space-y-1">
-      <p>ImageMagick will not be fetched.</p>
-      <p>However ImageMagick is required for this application to work.</p>
-      <p>If you change your mind, refresh the page.</p>
+    <div className="toast p-4 space-y-2">
+      <p className="text-lg font-light">ImageMagick vil ikke blive hentet.</p>
+      <p className="text-base text-gray-600">Men ImageMagick er påkrævet for at denne applikation skal virke.</p>
+      <p className="text-base text-gray-600">Hvis du ombestemmer dig, opdater siden.</p>
     </div>
   )
 
   else return (
     <>
-      <div className="toast p-3">
-        <p>Can we fetch ImageMagick (20MB)?</p>
-        <div className="grid grid-cols-3 gap-3 mt-1">
+      <div className="toast p-4">
+        <p className="text-lg font-light mb-4">Kan vi hente ImageMagick (20MB)?</p>
+        <div className="grid grid-cols-3 gap-3">
           <button
             onClick={() => setConsent(true)}
-            className="rounded py-1 text-white duration-150 hover:shadow-md active:bg-green-600 bg-green-500"
+            className="rounded-lg py-2 px-4 text-white duration-150 hover:shadow-md active:bg-green-600 bg-green-500 font-medium"
           >
-            Yes
+            Ja
           </button>
           <button 
           onClick={() => setConsent(false)}
-            className="rounded py-1 text-white duration-150 hover:shadow-md active:bg-red-600 bg-red-500"
+            className="rounded-lg py-2 px-4 text-white duration-150 hover:shadow-md active:bg-red-600 bg-red-500 font-medium"
           >
-            No
+            Nej
           </button>
           <button
             onClick={() => setIsLearnMoreModalOpen(true)}
-            className="rounded py-1 text-white duration-150 hover:shadow-md active:bg-blue-600 bg-blue-500"
+            className="rounded-lg py-2 px-4 text-white duration-150 hover:shadow-md active:bg-blue-600 bg-blue-500 font-medium"
           >
-            Learn More
+            Lær mere
           </button>
         </div>
       </div>
@@ -190,18 +196,18 @@ export const Progress: React.FC = () => {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className="toast p-3">
-        <div className="flex justify-between text-base mb-2 space-x-4">
-          <p>
+      <div className="toast p-4">
+        <div className="flex justify-between text-lg mb-3 space-x-4">
+          <p className="font-light">
             {
-              (status === "downloading" && "Fetching ImageMagick...") ||
+              (status === "downloading" && "Henter ImageMagick...") ||
               (status === "fetching-from-cache" &&
-                "Fetching ImageMagick from cache") ||
-              (status === "parsing" && "Parsing") ||
-              (status === "complete" && "Finished!")}
+                "Henter ImageMagick fra cache") ||
+              (status === "parsing" && "Parser") ||
+              (status === "complete" && "Færdig!")}
           </p>
           {progressDeterminate && (
-            <p className="order-last font-bold">
+            <p className="order-last font-medium text-black">
               {
                 // If decimal, show the 2 digits of decimal, else don't show
                 imagemagickProgress % 1 !== 0

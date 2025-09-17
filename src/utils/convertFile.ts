@@ -6,7 +6,10 @@ import prettyMs from "pretty-ms";
 
 export const convertFile = async (
   file: FileStatus,
-  worker: WorkerType
+  worker: WorkerType,
+  quality: number = 90,
+  scale: number = 100,
+  maxWidth?: number
 ): Promise<FileStatus> => {
   try {
     const start = new Date();
@@ -16,6 +19,9 @@ export const convertFile = async (
     const stringData = await worker.convertFile({
       content,
       convertTo: file.convertTo,
+      quality,
+      scale,
+      maxWidth,
     });
 
     // Convert string data back to a Uint8Array
@@ -27,7 +33,7 @@ export const convertFile = async (
     return {
       ...file,
       status: "success",
-      statusTooltip: `Finished in ${completionTime}`,
+      statusTooltip: `Færdig på ${completionTime}`,
       successData: {
         data: data,
         url: URL.createObjectURL(new Blob([data])),
@@ -38,7 +44,7 @@ export const convertFile = async (
     return {
       ...file,
       status: "failed",
-      statusTooltip: "Open the DevTools console for more information"
+      statusTooltip: "Åbn DevTools konsollen for mere information"
     };
   }
 };

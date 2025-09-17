@@ -4,7 +4,7 @@ import getFileType from 'magic-bytes.js';
 import heicDecode from "heic-decode-builds";
 import { ImageFileTypes } from "$/constants";
 
-// Import ImageMagick modules dynamically to ensure proper initialization
+// Global variables for ImageMagick modules
 let ImageMagick: any;
 let initializeImageMagick: any;
 let MagickImage: any;
@@ -19,31 +19,41 @@ interface ConvertFile {
   maxWidth?: number;
 }
 
+// Function to load ImageMagick modules
+const loadImageMagickModules = async () => {
+  if (ImageMagick) return; // Already loaded
+  
+  try {
+    // Load the main ImageMagick module
+    const magickWasm = await import("@imagemagick/magick-wasm");
+    ImageMagick = magickWasm.ImageMagick;
+    initializeImageMagick = magickWasm.initializeImageMagick;
+    
+    // Load other modules
+    const magickImage = await import("@imagemagick/magick-wasm/magick-image");
+    const magickFormat = await import("@imagemagick/magick-wasm/magick-format");
+    const magickReadSettings = await import("@imagemagick/magick-wasm/settings/magick-read-settings");
+    
+    MagickImage = magickImage.MagickImage;
+    MagickFormat = magickFormat.MagickFormat;
+    MagickReadSettings = magickReadSettings.MagickReadSettings;
+    
+    // Initialize ImageMagick
+    await initializeImageMagick();
+  } catch (error) {
+    console.error('Failed to load ImageMagick modules:', error);
+    throw error;
+  }
+};
+
 export const init = async () => {
-  // Dynamically import ImageMagick modules
-  const magickWasm = await import("@imagemagick/magick-wasm");
-  const magickImage = await import("@imagemagick/magick-wasm/magick-image");
-  const magickFormat = await import("@imagemagick/magick-wasm/magick-format");
-  const magickReadSettings = await import("@imagemagick/magick-wasm/settings/magick-read-settings");
-  
-  // Assign the imported modules
-  ImageMagick = magickWasm.ImageMagick;
-  initializeImageMagick = magickWasm.initializeImageMagick;
-  MagickImage = magickImage.MagickImage;
-  MagickFormat = magickFormat.MagickFormat;
-  MagickReadSettings = magickReadSettings.MagickReadSettings;
-  
-  await initializeImageMagick();
-  return true
-}
+  await loadImageMagickModules();
+  return true;
+};
 
 export const convertFile = async (data: ConvertFile) => {
-  // Ensure ImageMagick is initialized
-  if (!initializeImageMagick) {
-    await init();
-  }
-  
-  await initializeImageMagick();
+  // Ensure ImageMagick is loaded
+  await loadImageMagickModules();
 
   const originalFileType = getFileType(data.content);
 
@@ -57,10 +67,10 @@ export const convertFile = async (data: ConvertFile) => {
       width: heif.width,
       height: heif.height,
       format: MagickFormat.Rgba
-    })
+    });
 
     let image = MagickImage.create();
-    image.depth = 8
+    image.depth = 8;
     image.read(heifData, settings);
     
     // Set quality if provided
@@ -91,9 +101,7 @@ export const convertFile = async (data: ConvertFile) => {
 
     const stringData = bytesToBase64(convertedImage);
     return stringData;
-  }
-
-  else {
+  } else {
     let image = MagickImage.create();
     image.read(data.content);
 
@@ -134,7 +142,7 @@ export const convertFile = async (data: ConvertFile) => {
 const worker = {
   init,
   convertFile
-}
+};
 
 export type BaseWorkerType = typeof worker;
 

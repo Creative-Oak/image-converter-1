@@ -1,23 +1,35 @@
 .DragDropFile {
-    border: 2px dashed rgb(180, 176, 176);
-    border-radius: 3px;
-    padding: 30px;
-    color: #989393;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 64px 32px;
+    color: #6b7280;
     cursor: pointer;
-    background-color: white;
+    background-color: #f9fafb;
     text-align: center;
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    transition: all 0.3s ease;
+    min-height: 240px;
+    font-weight: 300;
+}
+
+.DragDropFile:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  color: #374151;
 }
 
 .DragDropFile:active:focus {
-  background-color: whitesmoke;
+  background-color: #e5e7eb;
+  border-color: #6b7280;
 }
 
 .DragDropFile.fileCurrentlyHovered {
-    background-color: rgba(96, 165, 250, 0.2);
+    background-color: #000000;
+    border-color: #000000;
+    color: #ffffff;
 }
 
 .DragDropFile.fileCurrentlyHovered * {
@@ -25,12 +37,16 @@
 }
 
 .text {
-  font-size: 200%;
+  font-size: 18px;
+  font-weight: 300;
   user-select: none;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
 }
 
 .icon-wrapper {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  opacity: 0.6;
 }
 
 .DragDropFile hr {

@@ -36,7 +36,7 @@ export const ReloadPrompt: React.FC = () => {
     >
       <div className="toast">
         <div className="flex">
-          <div className="flex flex-grow items-center space-x-1 p-3">
+          <div className="flex flex-grow items-center space-x-3 p-4">
             <span className="text-2xl">
               {offlineReady && <IoCheckmarkCircle className="text-green-600" />}
               {needRefresh && (
@@ -47,27 +47,27 @@ export const ReloadPrompt: React.FC = () => {
                 />
               )}
             </span>
-            <span className="text-base">
-              {offlineReady && "Doblar is ready to work offline!"}
-              {needRefresh && "A new update is ready!"}
+            <span className="text-lg font-light">
+              {offlineReady && "Billedekonverter er klar til at arbejde offline!"}
+              {needRefresh && "En ny opdatering er klar!"}
             </span>
             <div className="flex-grow"></div>
             {needRefresh && (
               <button
-                className="font-semibold focus:underline text-blue-600 active:text-blue-800"
+                className="font-medium focus:underline text-black hover:text-gray-600 active:text-gray-800 transition-colors"
                 onClick={() => updateServiceWorker(true)}
               >
-                Update
+                Opdater
               </button>
             )}
           </div>
 
           {needRefresh && (
             <button
-              className="flex border-l-2 border-slate-200 justify-center items-center p-2 active:bg-slate-200 duration-150"
+              className="flex border-l-2 border-gray-200 justify-center items-center p-3 active:bg-gray-100 duration-150 hover:bg-gray-50"
               onClick={() => setDisplay(false)}
             >
-              <IoClose />
+              <IoClose className="text-gray-600" />
             </button>
           )}
         </div>

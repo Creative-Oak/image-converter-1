@@ -6,7 +6,14 @@ const fs = require("fs");
 const fsPromises = fs.promises;
 
 (async() => {
-  const workerPath = await fg("./dist/assets/worker.*.js");
+  const workerPath = await fg("./dist/assets/worker-*.js");
+  
+  if (workerPath.length === 0) {
+    console.error("No worker file found in ./dist/assets/worker-*.js");
+    console.error("Make sure 'vite build' has completed successfully first.");
+    process.exit(1);
+  }
+  
   const workerStats = await fsPromises.stat(workerPath[0]);
   const workerSize = workerStats.size;
 

@@ -1,77 +1,67 @@
 import React from "react";
-import { useWindowSize } from "react-use";
-import { Card } from "./Card";
-import { MobileBox } from "./MobileBox";
 import { IoLockClosedOutline, IoLogoGithub } from "react-icons/io5";
 import { MdOutlineWifiOff } from "react-icons/md";
 
 export const About = () => {
-  const { width } = useWindowSize();
-  const isTablet = width >= 850;
-  const TopLevelComponent = 
-    isTablet 
-      ? ({ children }: {children: React.ReactNode}) => <div className="bg-white rounded py-8 px-8">{children}</div> 
-      : ({ children }: {children: React.ReactNode}) => <MobileBox title="About">{children}</MobileBox>;
-    
   return (
-    <TopLevelComponent>
-      <h2 className="font-bold text-2xl">Why Doblar?</h2>
-      <p className="text-gray-700 my-5">
-        Doblar is not an ordinary image converter. All the conversion happens
-        right in your browser. In other words, nothing is uploaded to a server,
-        it is purely local!
-      </p>
+    <footer className="bg-gray-50 border-t border-gray-200 py-20">
+      <div className="max-w-4xl mx-auto px-6">
+        <h2 className="text-4xl font-light text-black mb-8">Hvorfor Billedekonverter?</h2>
+        <p className="text-xl text-gray-600 mb-16 max-w-3xl leading-relaxed">
+          Billedekonverter er ikke en almindelig billedkonverter. Al konvertering sker
+          direkte i din browser. Med andre ord, intet uploades til en server,
+          det er helt lokalt!
+        </p>
 
-      <div className={isTablet ? "grid grid-cols-3 gap-6" : "space-y-10"}>
-        <Card
-          icon={IoLockClosedOutline}
-          title="Secure"
-          description={
-            <>
-              Since the file conversion is local, nothing leaves your device.
-              This means you can safely use sensitive files without having to
-              worry about someone else being able to access them, because we
-              can't. Doblar is purely client side - there isn't even a server
-              involved!
-            </>
-          }
-        />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+          <div className="space-y-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <IoLockClosedOutline className="text-2xl text-gray-600" />
+              <h3 className="text-2xl font-light text-black">Sikker</h3>
+            </div>
+            <p className="text-gray-600 leading-relaxed">
+              Da filkonverteringen er lokal, forlader intet din enhed.
+              Dette betyder, at du sikkert kan bruge følsomme filer uden at
+              bekymre dig om, at andre kan få adgang til dem, fordi vi
+              ikke kan. Billedekonverter er rent klientside - der er ikke engang en server
+              involveret!
+            </p>
+          </div>
 
-        <Card
-          icon={MdOutlineWifiOff}
-          title="Works Offline"
-          tag="Beta"
-          description={
-            <>
-              If you aren't connected to the Internet, you can still use Doblar!
-              Try it out yourself: turn off your WiFi, refresh the page and try
-              converting an image! The only catch is you need to make sure
-              ImageMagick has been fully fetched before you go offline, but
-              once it's fetched, Doblar works offline!
-            </>
-          }
-        />
+          <div className="space-y-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <MdOutlineWifiOff className="text-2xl text-gray-600" />
+              <h3 className="text-2xl font-light text-black">Virker offline</h3>
+              <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Beta</span>
+            </div>
+            <p className="text-gray-600 leading-relaxed">
+              Hvis du ikke er forbundet til internettet, kan du stadig bruge Billedekonverter!
+              Prøv det selv: sluk for dit WiFi, opdater siden og prøv at
+              konvertere et billede! Den eneste ulempe er, at du skal sørge for,
+              at ImageMagick er blevet hentet fuldt ud, før du går offline, men
+              når det er hentet, virker Billedekonverter offline!
+            </p>
+          </div>
 
-        <Card
-          icon={IoLogoGithub}
-          title="Open Source"
-          description={
-            <>
-              Doblar is fully open source. Doblar uses open source software as
-              well, so you can truly see Doblar is 100% local.
-              <br />
-              <br />
-              <a
-                className="link"
-                href="https://github.com/Armster15/doblar"
-                target="_blank"
-              >
-                GitHub Repository
-              </a>
-            </>
-          }
-        />
+          <div className="space-y-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <IoLogoGithub className="text-2xl text-gray-600" />
+              <h3 className="text-2xl font-light text-black">Open Source</h3>
+            </div>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              Billedekonverter er fuldt open source. Billedekonverter bruger også open source software,
+              så du kan virkelig se, at Billedekonverter er 100% lokalt.
+            </p>
+            <a
+              className="inline-block text-gray-600 hover:text-gray-900 underline text-sm transition-colors"
+              href="https://github.com/Armster15/doblar"
+              target="_blank"
+            >
+              GitHub Repository
+            </a>
+          </div>
+        </div>
       </div>
-    </TopLevelComponent>
+    </footer>
   );
 };

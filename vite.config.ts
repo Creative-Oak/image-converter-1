@@ -15,13 +15,15 @@ export default defineConfig(({ mode }) => ({
         // Resolves in the `dist` folder. So the globs here should be related to the build, not the `src` folder
         globPatterns: [
           "**/*.{js,css,html,png,svg,ico}",
-        ]
+        ],
+        // Increase file size limit to accommodate large ImageMagick worker (19.7MB)
+        maximumFileSizeToCacheInBytes: 25 * 1024 * 1024, // 25MB
       },
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Doblar',
-        short_name: 'Doblar',
-        description: 'Doblar is a fully local image converter. No files are sent anywhere as the conversion is completely local.',
+        name: 'Billedekonverter',
+        short_name: 'Billedekonverter',
+        description: 'Billedekonverter is a fully local image converter. No files are sent anywhere as the conversion is completely local.',
         theme_color: '#5bbad5',
         icons: [
           {
@@ -45,7 +47,8 @@ export default defineConfig(({ mode }) => ({
     }),
   ],
   define: {
-    "process.env.NODE_DEBUG": undefined
+    "process.env.NODE_DEBUG": undefined,
+    global: "globalThis"
   },
   resolve: {
     alias: {
@@ -57,5 +60,12 @@ export default defineConfig(({ mode }) => ({
       external: ["module-workers-polyfill"],
       plugins: [ignore([...builtinModules, "ws"])]
     }
+  },
+  worker: {
+    format: 'es'
+  },
+  optimizeDeps: {
+    exclude: ["@imagemagick/magick-wasm"],
+    include: ["comlink", "byte-base64", "magic-bytes.js", "heic-decode-builds"]
   }
 }))

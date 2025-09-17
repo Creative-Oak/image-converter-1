@@ -16,14 +16,16 @@ if ('serviceWorker' in navigator && import.meta.env.DEV) {
 }
 
 /* Import tota11y if in dev mode */
-if(import.meta.env.DEV) {
-  // @ts-ignore
-  await import("@khanacademy/tota11y")
-}
-
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+(async () => {
+  if(import.meta.env.DEV) {
+    // @ts-ignore
+    await import("@khanacademy/tota11y")
+  }
+  
+  ReactDOM.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+    document.getElementById("root")
+  );
+})();

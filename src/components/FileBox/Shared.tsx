@@ -9,6 +9,7 @@ import { LoadingIcon } from "$/components/LoadingIcon";
 import { FileStatus, imageFileTypes } from "$/constants";
 import type { PrimitiveAtom } from "jotai";
 import { convertFile } from "$/utils/convertFile";
+import { useQuality, useScale } from "$/state";
 
 export const statusBoxRendering: {
   [key in FileStatus["status"]]: {
@@ -48,12 +49,16 @@ export const FileName: React.FC<State> = ({ fileAtom }) => {
   const [file, setFile] = useAtom(fileAtom)
 
   return (
-  <p
-    className="text-lg whitespace-nowrap overflow-x-auto scrollbar"
-    style={{ scrollbarWidth: "thin" }}
-  >
-    {file.file.name}
-  </p>
+  <div className="text-lg whitespace-nowrap overflow-x-auto scrollbar">
+    <p style={{ scrollbarWidth: "thin" }}>
+      {file.file.name}
+    </p>
+    {file.dimensions && (
+      <p className="text-sm text-gray-500 font-mono">
+        {file.dimensions.width} × {file.dimensions.height}
+      </p>
+    )}
+  </div>
 )};
 
 export const Select: React.FC<State> = ({ fileAtom }) => {
@@ -91,6 +96,8 @@ export const StatusTag: React.FC<State> = ({ fileAtom }) => {
 export const ActionButtons: React.FC<ActionButtonsProps> = ({ fileAtom, removeFileToConvertAtom }) => {
   const ref = useWorkerRefContext();
   const [file, setFile] = useAtom(fileAtom);
+  const [quality] = useQuality();
+  const [scale] = useScale();
 
   const deleteElement = (arr: any[], index: number) => arr.filter(s => s.length <= index);
 
@@ -104,7 +111,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ fileAtom, removeFi
           disabled={!(file.convertTo && ref?.current)}
           onClick={() => {
             setFile({ ...file, status: "in-progress" })     
-            convertFile(file, ref!.current!).then((newFile) => setFile(newFile));
+            convertFile(file, ref!.current!, quality, scale).then((newFile) => setFile(newFile));
           }}
           className={cn(
             "p-2 rounded text-white",
@@ -143,7 +150,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ fileAtom, removeFi
           disabled={!ref?.current}
           onClick={() => {
             setFile({ ...file, status: "in-progress" })      
-            convertFile(file, ref!.current!).then((newFile) => setFile(newFile))
+            convertFile(file, ref!.current!, quality, scale).then((newFile) => setFile(newFile))
           }}
           className={cn(
             "p-2 rounded text-white",
