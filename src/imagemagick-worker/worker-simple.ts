@@ -84,10 +84,10 @@ export const convertFile = async (data: ConvertFile) => {
       image.resize(`${scalePercentage}%`);
     }
     
-    // Apply max width if provided
+    // Apply width scaling if provided
     if (data.maxWidth !== undefined) {
       const geometry = image.geometry;
-      if (geometry.width > data.maxWidth) {
+      if (geometry && geometry.width) {
         const ratio = geometry.height / geometry.width;
         const newHeight = Math.round(data.maxWidth * ratio);
         image.resize(`${data.maxWidth}x${newHeight}`);
@@ -116,10 +116,10 @@ export const convertFile = async (data: ConvertFile) => {
       image.resize(`${scalePercentage}%`);
     }
 
-    // Apply max width if provided
+    // Apply width scaling if provided
     if (data.maxWidth !== undefined) {
       const geometry = image.geometry;
-      if (geometry.width > data.maxWidth) {
+      if (geometry && geometry.width) {
         const ratio = geometry.height / geometry.width;
         const newHeight = Math.round(data.maxWidth * ratio);
         image.resize(`${data.maxWidth}x${newHeight}`);

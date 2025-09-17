@@ -4,6 +4,7 @@ import styles from "./DragDropFile.module.css";
 import { IconType } from "react-icons";
 import { useButton, mergeProps } from "react-aria";
 import { DivProps } from "react-html-props";
+import { getBitmapAcceptAttribute } from "$/utils/validateBitmapFormat";
 
 interface DragDropFileProps {
   text: string;
@@ -58,6 +59,9 @@ export const DragDropFile: React.FC<DragDropFileProps> = (props) => {
     
     if (props.acceptableFileTypes) {
       input.setAttribute("accept", props.acceptableFileTypes);
+    } else {
+      // Default to bitmap formats if no specific types provided
+      input.setAttribute("accept", getBitmapAcceptAttribute());
     }
 
     /*

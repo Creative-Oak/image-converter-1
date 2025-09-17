@@ -10,15 +10,15 @@ const scaleOptions = [
   { label: "25%", value: 25, description: "Kvart størrelse" }
 ];
 
-const maxWidthOptions = [
-  { label: "XL", value: 1500, description: "Ekstra stor (1500px)" },
-  { label: "Meget stor", value: 1000, description: "Meget stor (1000px)" },
-  { label: "Stor", value: 750, description: "Stor (750px)" },
+const widthOptions = [
+  { label: "Meget stor", value: 2000, description: "Meget stor (2000px)" },
+  { label: "Større", value: 1500, description: "Større (1500px)" },
+  { label: "Stor", value: 1000, description: "Stor (1000px)" },
+
   { label: "Medium", value: 500, description: "Medium (500px)" },
   { label: "Lille", value: 250, description: "Lille (250px)" },
   { label: "Meget lille", value: 125, description: "Meget lille (125px)" },
-  { label: "Ekstra lille", value: 75, description: "Ekstra lille (75px)" },
-  { label: "Tiny", value: 32, description: "Tiny (32px)" }
+  { label: "Ekstra lille", value: 32, description: "Ekstra lille (32px)" },
 ];
 
 export const ScaleSlider: React.FC = () => {
@@ -40,9 +40,9 @@ export const ScaleSlider: React.FC = () => {
         height: Math.round(originalHeight * (scale / 100))
       };
     } else {
-      // For max width, maintain aspect ratio
+      // For width mode, always scale to selected width maintaining aspect ratio
       const ratio = originalHeight / originalWidth;
-      const newWidth = Math.min(originalWidth, maxWidth);
+      const newWidth = maxWidth;
       const newHeight = Math.round(newWidth * ratio);
       return { width: newWidth, height: newHeight };
     }
@@ -55,7 +55,7 @@ export const ScaleSlider: React.FC = () => {
   }));
 
   const currentValue = scaleMode === 'scale' ? scale : maxWidth;
-  const currentOptions = scaleMode === 'scale' ? scaleOptions : maxWidthOptions;
+  const currentOptions = scaleMode === 'scale' ? scaleOptions : widthOptions;
 
   return (
     <div className="space-y-6">
@@ -93,7 +93,7 @@ export const ScaleSlider: React.FC = () => {
               : 'text-gray-600 hover:text-black'
           }`}
         >
-          Maks bredde
+          Bredde
         </button>
       </div>
 

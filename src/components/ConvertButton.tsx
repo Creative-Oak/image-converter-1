@@ -5,6 +5,7 @@ import { convertFile } from "$/utils/convertFile";
 import { IoSync, IoDownloadOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { LoadingIcon } from "./LoadingIcon";
 import { FileStatus } from "$/constants";
+import JSZip from "jszip";
 
 export const ConvertButton: React.FC = () => {
   const [files, setFiles] = useFilesToConvert();
@@ -30,6 +31,7 @@ export const ConvertButton: React.FC = () => {
       setFiles(prev => prev.map(f => ({ ...f, status: "in-progress" as const })));
 
       const results = new Map<string, { success: boolean; url?: string; error?: string }>();
+      const convertedFiles: { name: string; data: Uint8Array }[] = [];
       let completed = 0;
 
       // Convert files one by one
@@ -49,20 +51,17 @@ export const ConvertButton: React.FC = () => {
               url: result.successData.url 
             });
             
-            // Auto-download the file with descriptive name
-            const link = document.createElement('a');
-            link.href = result.successData.url;
-            
             // Generate descriptive filename: originalname_scale100_quality90.png
             const originalName = fileStatus.file.name.replace(/\.[^/.]+$/, "");
             const scaleText = scale !== 100 ? `_s${scale}` : '';
             const qualityText = quality !== 100 ? `_q${quality}` : '';
             const newFileName = `${originalName}${scaleText}${qualityText}.${format.toLowerCase()}`;
             
-            link.download = newFileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Store the converted file data for zip creation
+            convertedFiles.push({
+              name: newFileName,
+              data: result.successData.data
+            });
           } else {
             results.set(fileStatus.id, { 
               success: false, 
@@ -93,10 +92,47 @@ export const ConvertButton: React.FC = () => {
         };
       }));
 
+      // Create and download zip file if there are successful conversions
+      if (convertedFiles.length > 0) {
+        await createAndDownloadZip(convertedFiles);
+      }
+
     } catch (error) {
       console.error('Batch conversion failed:', error);
     } finally {
       setIsConverting(false);
+    }
+  };
+
+  const createAndDownloadZip = async (convertedFiles: { name: string; data: Uint8Array }[]) => {
+    try {
+      const zip = new JSZip();
+      
+      // Add each converted file to the zip
+      convertedFiles.forEach(file => {
+        zip.file(file.name, file.data);
+      });
+      
+      // Generate the zip file
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      
+      // Create download link for the zip file
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipBlob);
+      
+      // Generate zip filename with timestamp
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      const zipFileName = `konverterede-billeder_${timestamp}.zip`;
+      
+      link.download = zipFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the object URL
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error('Failed to create zip file:', error);
     }
   };
 
@@ -163,7 +199,7 @@ export const ConvertButton: React.FC = () => {
             ) : (
               <>
                 <IoSync className="w-5 h-5" />
-                <span>Konverter og download</span>
+                <span>Konverter og download ZIP</span>
               </>
             )}
           </button>
@@ -172,7 +208,7 @@ export const ConvertButton: React.FC = () => {
         {isCompleted && (
           <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-sm text-green-800">
-              ✅ Konvertering færdig! {successfulConversions}/{files.length} billeder konverteret succesfuldt og downloadet automatisk.
+              ✅ Konvertering færdig! {successfulConversions}/{files.length} billeder konverteret succesfuldt og downloadet som ZIP-fil.
             </p>
             {successfulConversions < files.length && (
               <p className="text-sm text-orange-700 mt-1">

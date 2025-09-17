@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { Transition } from "@headlessui/react";
 import { IoCheckmarkCircle, IoClose } from "react-icons/io5";
@@ -23,6 +23,11 @@ export const ReloadPrompt: React.FC = () => {
     },
     onNeedRefresh() {
       setDisplay(true);
+      // Automatically update the service worker after a brief delay
+      setTimeout(() => {
+        updateServiceWorker(false); // false = skip waiting, no page reload needed
+        setDisplay(false);
+      }, 2000); // Show notification for 2 seconds before auto-updating
     },
   });
 
@@ -49,23 +54,18 @@ export const ReloadPrompt: React.FC = () => {
             </span>
             <span className="text-lg font-light">
               {offlineReady && "Billedekonverter er klar til at arbejde offline!"}
-              {needRefresh && "En ny opdatering er klar!"}
+              {needRefresh && "Opdaterer automatisk..."}
             </span>
             <div className="flex-grow"></div>
-            {needRefresh && (
-              <button
-                className="font-medium focus:underline text-black hover:text-gray-600 active:text-gray-800 transition-colors"
-                onClick={() => updateServiceWorker(true)}
-              >
-                Opdater
-              </button>
-            )}
           </div>
 
           {needRefresh && (
             <button
               className="flex border-l-2 border-gray-200 justify-center items-center p-3 active:bg-gray-100 duration-150 hover:bg-gray-50"
-              onClick={() => setDisplay(false)}
+              onClick={() => {
+                updateServiceWorker(false); // Allow manual immediate update
+                setDisplay(false);
+              }}
             >
               <IoClose className="text-gray-600" />
             </button>

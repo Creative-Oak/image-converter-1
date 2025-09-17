@@ -13,7 +13,7 @@ const qualityOptions = [
 export const QualitySlider: React.FC = () => {
   const [quality, setQuality] = useQuality();
 
-  const resetQuality = () => setQuality(90);
+  const resetQuality = () => setQuality(95);
 
   return (
     <div className="space-y-6">
@@ -24,7 +24,7 @@ export const QualitySlider: React.FC = () => {
         <button
           onClick={resetQuality}
           className="flex items-center space-x-2 px-3 py-1 text-sm text-gray-600 hover:text-black transition-colors"
-          title="Nulstil til Meget god"
+          title="Nulstil til Meget god (95%)"
         >
           <IoRefresh className="w-4 h-4" />
           <span>Nulstil</span>

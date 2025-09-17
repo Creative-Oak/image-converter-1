@@ -18,7 +18,7 @@ export const ConversionSettings: React.FC = () => {
   const [scale, setScale] = useScale();
 
   const resetFormat = () => setFormat("WEBP");
-  const resetQuality = () => setQuality(90);
+  const resetQuality = () => setQuality(95);
   const resetScale = () => setScale(100);
 
   return (

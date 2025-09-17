@@ -54,7 +54,7 @@ export const About = () => {
             </p>
             <a
               className="inline-block text-gray-600 hover:text-gray-900 underline text-sm transition-colors"
-              href="https://github.com/Armster15/doblar"
+              href="https://github.com/Creative-Oak/image-converter-1"
               target="_blank"
             >
               GitHub Repository

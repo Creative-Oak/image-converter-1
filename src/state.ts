@@ -7,8 +7,8 @@ const filesToConvertAtomsAtom = splitAtom(filesToConvertAtom);
 export const useFilesToConvert = () => useAtom(filesToConvertAtom)
 export const useFilesToConvertAtoms = () => useAtom(filesToConvertAtomsAtom)
 
-// Quality slider state - default to 90%
-export const qualityAtom = atom<number>(90);
+// Quality slider state - default to 95%
+export const qualityAtom = atom<number>(95);
 export const useQuality = () => useAtom(qualityAtom);
 
 // Scale mode state - either 'scale' or 'maxWidth'

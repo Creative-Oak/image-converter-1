@@ -1,9 +1,10 @@
 import React, { useState, useRef } from "react";
 import { useFilesToConvert, useFormat } from "$/state";
 import { DragDropFile } from "./DragDropFile";
-import { IoImageOutline, IoClose, IoAdd } from "react-icons/io5";
+import { IoImageOutline, IoClose, IoAdd, IoWarning } from "react-icons/io5";
 import { FileStatus } from "$/constants";
 import { getImageDimensions } from "$/utils/getImageDimensions";
+import { isValidBitmapImage, getSupportedBitmapFormats, getBitmapAcceptAttribute } from "$/utils/validateBitmapFormat";
 
 interface AddMoreButtonProps {
   onFileSelect: (files: File[]) => void;
@@ -16,7 +17,7 @@ const AddMoreButton: React.FC<AddMoreButtonProps> = ({ onFileSelect }) => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("multiple", "");
-    input.setAttribute("accept", "image/*");
+    input.setAttribute("accept", getBitmapAcceptAttribute());
     input.style.display = "none";
 
     input.addEventListener("change", () => {
@@ -59,11 +60,11 @@ const AddMoreButton: React.FC<AddMoreButtonProps> = ({ onFileSelect }) => {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`
-          w-full h-full flex flex-col items-center justify-center text-gray-500 hover:text-gray-700 transition-colors
+          w-full text-gray-500 hover:text-gray-700 transition-colors
           ${isHovered ? 'text-gray-700' : ''}
         `}
       >
-        <div className="space-y-3 w-full">
+        <div className="space-y-3">
           <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
             <IoAdd className="w-8 h-8" />
           </div>
@@ -86,45 +87,70 @@ export const ImageUpload: React.FC = () => {
   const [format] = useFormat();
   const [previewUrls, setPreviewUrls] = useState<Map<string, string>>(new Map());
   const [isLoadingDimensions, setIsLoadingDimensions] = useState(false);
+  const [rejectedFiles, setRejectedFiles] = useState<string[]>([]);
 
   const handleFileSelect = async (newFiles: File[]) => {
     if (newFiles.length > 0) {
       setIsLoadingDimensions(true);
       
-      const newFileStatuses: FileStatus[] = await Promise.all(
-        newFiles.map(async (file) => {
-          try {
-            const dimensions = await getImageDimensions(file);
-            return {
-              file,
-              id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-              status: "not-started" as const,
-              convertTo: format as any,
-              dimensions,
-            };
-          } catch (error) {
-            console.error('Failed to load dimensions for', file.name, error);
-            return {
-              file,
-              id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-              status: "not-started" as const,
-              convertTo: format as any,
-            };
-          }
-        })
-      );
-
-      setFiles(prev => [...prev, ...newFileStatuses]);
+      // Filter files to only include valid bitmap images
+      const validFiles: File[] = [];
+      const rejectedFileNames: string[] = [];
       
-      // Create preview URLs for new files
-      const newPreviewUrls = new Map(previewUrls);
       newFiles.forEach(file => {
-        const fileId = newFileStatuses.find(f => f.file === file)?.id;
-        if (fileId) {
-          newPreviewUrls.set(fileId, URL.createObjectURL(file));
+        if (isValidBitmapImage(file)) {
+          validFiles.push(file);
+        } else {
+          rejectedFileNames.push(file.name);
         }
       });
-      setPreviewUrls(newPreviewUrls);
+      
+      // Update rejected files list
+      if (rejectedFileNames.length > 0) {
+        setRejectedFiles(prev => [...prev, ...rejectedFileNames]);
+        // Clear rejected files after 5 seconds
+        setTimeout(() => {
+          setRejectedFiles(prev => prev.filter(name => !rejectedFileNames.includes(name)));
+        }, 5000);
+      }
+      
+      // Only process valid files
+      if (validFiles.length > 0) {
+        const newFileStatuses: FileStatus[] = await Promise.all(
+          validFiles.map(async (file) => {
+            try {
+              const dimensions = await getImageDimensions(file);
+              return {
+                file,
+                id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                status: "not-started" as const,
+                convertTo: format as any,
+                dimensions,
+              };
+            } catch (error) {
+              console.error('Failed to load dimensions for', file.name, error);
+              return {
+                file,
+                id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                status: "not-started" as const,
+                convertTo: format as any,
+              };
+            }
+          })
+        );
+
+        setFiles(prev => [...prev, ...newFileStatuses]);
+        
+        // Create preview URLs for new files
+        const newPreviewUrls = new Map(previewUrls);
+        validFiles.forEach(file => {
+          const fileId = newFileStatuses.find(f => f.file === file)?.id;
+          if (fileId) {
+            newPreviewUrls.set(fileId, URL.createObjectURL(file));
+          }
+        });
+        setPreviewUrls(newPreviewUrls);
+      }
       
       setIsLoadingDimensions(false);
     }
@@ -173,11 +199,33 @@ export const ImageUpload: React.FC = () => {
         </div>
       </div>
       
+      {/* Rejected files warning */}
+      {rejectedFiles.length > 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-start">
+            <IoWarning className="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-yellow-800 mb-2">
+                Følgende filer blev afvist:
+              </h3>
+              <ul className="text-sm text-yellow-700 space-y-1">
+                {rejectedFiles.map((filename, index) => (
+                  <li key={index} className="font-mono">• {filename}</li>
+                ))}
+              </ul>
+              <p className="text-xs text-yellow-600 mt-2">
+                Kun bitmap billedformater understøttes: {getSupportedBitmapFormats()}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {files.length === 0 ? (
         <DragDropFile
           text="Træk billeder her eller klik for at vælge flere"
           handleFiles={handleFileSelect}
-          acceptableFileTypes="image/*"
+          acceptableFileTypes={getBitmapAcceptAttribute()}
         />
       ) : (
         <div className="space-y-6">
