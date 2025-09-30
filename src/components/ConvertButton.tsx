@@ -92,15 +92,42 @@ export const ConvertButton: React.FC = () => {
         };
       }));
 
-      // Create and download zip file if there are successful conversions
+      // Download files - ZIP only if more than 1 successful conversion
       if (convertedFiles.length > 0) {
-        await createAndDownloadZip(convertedFiles);
+        if (convertedFiles.length === 1) {
+          // Download single file directly
+          await downloadSingleFile(convertedFiles[0]);
+        } else {
+          // Download multiple files as ZIP
+          await createAndDownloadZip(convertedFiles);
+        }
       }
 
     } catch (error) {
       console.error('Batch conversion failed:', error);
     } finally {
       setIsConverting(false);
+    }
+  };
+
+  const downloadSingleFile = async (convertedFile: { name: string; data: Uint8Array }) => {
+    try {
+      // Create blob from the converted file data
+      const blob = new Blob([new Uint8Array(convertedFile.data)], { type: 'application/octet-stream' });
+      
+      // Create download link for the single file
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = convertedFile.name;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the object URL
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error('Failed to download single file:', error);
     }
   };
 
@@ -199,7 +226,7 @@ export const ConvertButton: React.FC = () => {
             ) : (
               <>
                 <IoSync className="w-5 h-5" />
-                <span>Konverter og download ZIP</span>
+                <span>Konverter og download{files.length > 1 ? ' ZIP' : ''}</span>
               </>
             )}
           </button>
@@ -208,7 +235,7 @@ export const ConvertButton: React.FC = () => {
         {isCompleted && (
           <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
             <p className="text-sm text-green-800">
-              ✅ Konvertering færdig! {successfulConversions}/{files.length} billeder konverteret succesfuldt og downloadet som ZIP-fil.
+              ✅ Konvertering færdig! {successfulConversions}/{files.length} billede{successfulConversions !== 1 ? 'r' : ''} konverteret succesfuldt og downloadet{successfulConversions > 1 ? ' som ZIP-fil' : ''}.
             </p>
             {successfulConversions < files.length && (
               <p className="text-sm text-orange-700 mt-1">

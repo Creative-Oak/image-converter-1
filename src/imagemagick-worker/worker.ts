@@ -76,11 +76,16 @@ export const convertFile = async (data: ConvertFile) => {
     
     // Apply width scaling if provided
     if (data.maxWidth !== undefined) {
-      const geometry = image.geometry;
-      if (geometry && geometry.width) {
-        const ratio = geometry.height / geometry.width;
-        const newHeight = Math.round(data.maxWidth * ratio);
-        image.resize(`${data.maxWidth}x${newHeight}`);
+      console.log('Applying width scaling:', data.maxWidth);
+      const width = image.width;
+      const height = image.height;
+      console.log('Original dimensions:', width, 'x', height);
+      if (width && height) {
+        // Use ImageMagick syntax for width-only resize (maintains aspect ratio)
+        image.resize(`${data.maxWidth}x`);
+        console.log('Resized to width:', data.maxWidth);
+      } else {
+        console.log('Could not get image dimensions');
       }
     }
     
@@ -110,11 +115,16 @@ export const convertFile = async (data: ConvertFile) => {
 
     // Apply width scaling if provided
     if (data.maxWidth !== undefined) {
-      const geometry = image.geometry;
-      if (geometry && geometry.width) {
-        const ratio = geometry.height / geometry.width;
-        const newHeight = Math.round(data.maxWidth * ratio);
-        image.resize(`${data.maxWidth}x${newHeight}`);
+      console.log('Applying width scaling:', data.maxWidth);
+      const width = image.width;
+      const height = image.height;
+      console.log('Original dimensions:', width, 'x', height);
+      if (width && height) {
+        // Use ImageMagick syntax for width-only resize (maintains aspect ratio)
+        image.resize(`${data.maxWidth}x`);
+        console.log('Resized to width:', data.maxWidth);
+      } else {
+        console.log('Could not get image dimensions');
       }
     }
 
